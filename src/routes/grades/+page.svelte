@@ -1,10 +1,19 @@
 <script lang="ts">
 	let grades: Array<{ grade: number; importance: number }> = $state([]);
 
-	let newGrade = { grade: 0, importance: 0 };
+	let newGrade: { grade: number | undefined; importance: number | undefined } = $state({
+		grade: undefined,
+		importance: undefined
+	});
 
 	function removeGrade(index: number) {
 		grades = grades.filter((_, i) => i !== index);
+	}
+
+	function addGrade(newGrade: { grade: number; importance: number }) {
+		if (typeof newGrade.grade === 'number' && typeof newGrade.importance === 'number') {
+			grades.push(newGrade);
+		}
 	}
 
 	const countAverage = (grades: Array<{ grade: number; importance: number }>) => {
@@ -20,6 +29,10 @@
 	let weightedAverage = $derived(parseFloat(countAverage(grades).toFixed(1)));
 </script>
 
+<svetle:head>
+	<title>Grades</title>
+</svetle:head>
+
 <h1 class="mb-2">Grades</h1>
 
 <div class="text-blue-300">
@@ -27,25 +40,28 @@
 </div>
 
 <div class="mb-4 flex flex-col gap-2 border-y-2 border-stone-600">
-	<div class="flex flex-row">
-		<div>Grade</div>
-		<div>|</div>
-		<div>Importance</div>
-	</div>
-	<hr />
 	<div class="flex flex-row gap-2 p-1">
 		<input
-			class="w-10 rounded-md border-2 border-blue-300"
+			class="w-20 rounded-md border-2 border-blue-100 p-px"
 			type="number"
+			placeholder="grade"
 			bind:value={newGrade.grade}
 		/>
 		<input
-			class="w-10 rounded-md border-2 border-blue-300"
+			class="w-20 rounded-md border-2 border-blue-100 p-px"
 			type="number"
+			placeholder="importnc."
 			bind:value={newGrade.importance}
 		/>
 		<div>|</div>
-		<button onclick={() => grades.push(newGrade)}>Add Grade</button>
+		<button
+			onclick={() => {
+				if (newGrade.grade && newGrade.importance) {
+					addGrade(newGrade);
+					newGrade = { grade: undefined, importance: undefined };
+				}
+			}}>Add Grade</button
+		>
 	</div>
 </div>
 
